@@ -55,14 +55,34 @@ source .venv/bin/activate
 
 OpenAI APIキーを持っていない場合は、[OpenAIの公式サイト](https://platform.openai.com/)から取得してください。
 
-```bash
-
+#### OpenAI APIを使用する場合
 ```env
+# APIプロバイダーの選択
+API_PROVIDER="openai"
+
 # OpenAI API設定
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_API_BASE="https://api.openai.com/v1"
-OPENAI_MODEL= "gpt-4o-2024-08-06"
+OPENAI_MODEL="gpt-4o-2024-08-06"
 ```
+
+#### Azure OpenAI APIを使用する場合
+```env
+# APIプロバイダーの選択
+API_PROVIDER="azure"
+
+# OpenAI設定（必須項目のため設定、Azure使用時は実際には使用されない）
+OPENAI_API_KEY="dummy"
+OPENAI_MODEL="gpt-4o-2024-08-06"
+
+# Azure OpenAI設定
+AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com/"
+AZURE_OPENAI_API_KEY="your_azure_api_key"
+AZURE_OPENAI_API_VERSION="2024-02-15-preview"
+AZURE_OPENAI_DEPLOYMENT_NAME="gpt-4o"
+```
+
+**注意**: Azure OpenAI APIを使用する場合は、Azureポータルでリソースを作成し、適切なモデルをデプロイする必要があります。
 
 ### 5. 検索インデックスの構築
 
