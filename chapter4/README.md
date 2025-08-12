@@ -79,8 +79,13 @@ OPENAI_MODEL="gpt-4o-2024-08-06"
 AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com/"
 AZURE_OPENAI_API_KEY="your_azure_api_key"
 AZURE_OPENAI_API_VERSION="2024-02-15-preview"
+# LLM用デプロイメント名（例: gpt-4o, gpt-4.1 など）
 AZURE_OPENAI_DEPLOYMENT_NAME="gpt-4o"
+# 埋め込み用デプロイメント名（例: text-embedding-3-small など）
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="text-embedding-3-small"
 ```
+
+> ※ LLM用（AZURE_OPENAI_DEPLOYMENT_NAME）と埋め込み用（AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME）はAzureポータルでそれぞれデプロイしたモデルのデプロイメント名を設定してください。
 
 **注意**: Azure OpenAI APIを使用する場合は、Azureポータルでリソースを作成し、適切なモデルをデプロイする必要があります。
 
@@ -102,4 +107,13 @@ make create.index
 ```yaml
     volumes:
       - ./.rag_data/es_data:/usr/share/elasticsearch/data
+```
+
+あるいは、以下を実行
+
+```bash
+sudo chown -R 1000:0 ./.rag_data/
+sudo chown -R 1000:0 ./.rag_data/es_data/
+sudo chmod -R g+rwX ./.rag_data/
+sudo chmod -R g+rwX ./.rag_data/es_data/
 ```

@@ -6,16 +6,22 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from openai import OpenAI
+from openai import AzureOpenAI, OpenAI
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
 
 class Settings(BaseSettings):
-    openai_api_key: str
-    openai_api_base: str
-    openai_model: str
+    api_provider: str = "openai"
+    openai_api_key: str = ""
+    openai_api_base: str = ""
+    openai_model: str = ""
+    azure_openai_endpoint: str = ""
+    azure_openai_api_key: str = ""
+    azure_openai_api_version: str = ""
+    azure_openai_deployment_name: str = ""
+    azure_openai_embedding_deployment_name: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -50,7 +56,6 @@ def load_csv_docs(data_dir_path: str) -> list[Document]:
 
 
 def create_keyword_search_index(es: Elasticsearch, index_name: str) -> None:
-
     # インデックスマッピングの定義
     mapping = {
         # ドキュメントのマッピング設定を定義
@@ -109,19 +114,24 @@ def create_keyword_search_index(es: Elasticsearch, index_name: str) -> None:
 
 
 def create_vector_search_index(qdrant_client: QdrantClient, index_name: str) -> None:
-    result = qdrant_client.create_collection(
-        collection_name=index_name,
-        vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
-    )
-    if result:
-        print(f"Collection {index_name} created successfully")
-    else:
-        print(f"Failed to create collection {index_name}")
+    # 既存コレクションの存在チェック
+    try:
+        qdrant_client.get_collection(index_name)
+        print(f"Collection {index_name} already exists. Skipping creation.")
+        return
+    except Exception:
+        # 存在しない場合のみ作成
+        result = qdrant_client.create_collection(
+            collection_name=index_name,
+            vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+        )
+        if result:
+            print(f"Collection {index_name} created successfully")
+        else:
+            print(f"Failed to create collection {index_name}")
 
 
-def add_documents_to_es(
-    es: Elasticsearch, index_name: str, docs: list[Document]
-) -> None:
+def add_documents_to_es(es: Elasticsearch, index_name: str, docs: list[Document]) -> None:
     insert_docs = []
 
     for doc in docs:
@@ -148,14 +158,25 @@ def add_documents_to_qdrant(
     settings: Settings,
 ) -> None:
     points = []
-    client = OpenAI(api_key=settings.openai_api_key)
+
+    if settings.api_provider.lower() == "azure":
+        client = AzureOpenAI(
+            azure_endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_api_key,
+            api_version=settings.azure_openai_api_version,
+        )
+        embedding_model = settings.azure_openai_embedding_deployment_name
+    else:
+        client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_api_base,
+        )
+        embedding_model = settings.openai_model if settings.openai_model else "text-embedding-3-small"
 
     for i, doc in enumerate(docs):
         content = doc.page_content
         content = content.replace(" ", "")
-        embedding = client.embeddings.create(
-            model="text-embedding-3-small", input=content
-        )
+        embedding = client.embeddings.create(model=embedding_model, input=content)
         points.append(
             PointStruct(
                 id=i,
