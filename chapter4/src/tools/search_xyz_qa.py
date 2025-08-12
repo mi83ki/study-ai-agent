@@ -1,5 +1,5 @@
 from langchain.tools import tool
-from openai import OpenAI
+from openai import AzureOpenAI, OpenAI
 from pydantic import BaseModel, Field
 from qdrant_client import QdrantClient
 
@@ -28,14 +28,23 @@ def search_xyz_qa(query: str) -> list[SearchOutput]:
     qdrant_client = QdrantClient("http://localhost:6333")
 
     settings = Settings()
-    openai_client = OpenAI(api_key=settings.openai_api_key)
+    if settings.api_provider.lower() == "azure":
+        openai_client = AzureOpenAI(
+            azure_endpoint=settings.azure_openai_endpoint or "",
+            api_key=settings.azure_openai_api_key or "",
+            api_version=settings.azure_openai_api_version or "",
+        )
+        embedding_model = (
+            settings.azure_openai_embedding_deployment_name
+            if settings.azure_openai_embedding_deployment_name
+            else "text-embedding-3-small"
+        )
+    else:
+        openai_client = OpenAI(api_key=settings.openai_api_key)
+        embedding_model = "text-embedding-3-small"
 
     logger.info("Generating embedding vector from input query")
-    query_vector = (
-        openai_client.embeddings.create(input=query, model="text-embedding-3-small")
-        .data[0]
-        .embedding
-    )
+    query_vector = openai_client.embeddings.create(input=query, model=embedding_model).data[0].embedding
 
     search_results = qdrant_client.query_points(
         collection_name="documents", query=query_vector, limit=MAX_SEARCH_RESULTS
