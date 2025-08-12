@@ -1,14 +1,17 @@
 # Study AI Agent
 
-This repository is for studying AI agent development and related technologies.
+このリポジトリは、AIエージェント開発および関連技術の学習用です。
 
-## Purpose
-- Learning AI agent architectures
-- Experimenting with different AI frameworks
-- Documenting study progress and findings
+## 目的
 
-## Getting Started
-This is a learning repository. Contents will be added as the study progresses.
+- AIエージェントのアーキテクチャを学ぶ
+- 様々なAIフレームワークの実験
+- 学習の進捗や発見を記録
 
-## License
-This project is for educational purposes.
+## はじめに
+
+このリポジトリは学習用です。内容は学習の進行に合わせて追加されます。
+
+## ライセンス
+
+本プロジェクトは教育目的で利用されています。
