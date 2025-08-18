@@ -56,8 +56,6 @@ source .venv/bin/activate
 
 OpenAI APIキーを持っていない場合は、[OpenAIの公式サイト](https://platform.openai.com/)から取得してください。
 
-```bash
-
 ```env
 # OpenAI API設定
 OPENAI_API_KEY=your_openai_api_key
