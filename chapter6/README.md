@@ -134,6 +134,13 @@ LangGraph Studioを使用してエージェントを実行する場合：
 $ uv run langgraph dev --no-reload
 ```
 
+- ※Windowsの場合、UTF-8モードで.envを読み込むように設定する。
+
+    ```powershell
+    $env:PYTHONUTF8="1"
+    uv run langgraph dev --no-reload
+    ```
+
 LangGraph Studioが起動したら、ブラウザより `http://localhost:8123` にアクセスします（自動的に開きます）。ブラウザ上のUIからリサーチゴールを入力し、エージェントを実行すると、エージェントの逐次的な動きをブラウザ上で確認することができます。
 
 ### 主要な機能
