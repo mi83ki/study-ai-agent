@@ -26,7 +26,7 @@ PythonのAI・機械学習プログラミングに適した言語でデータマ
 
 def generate_profile(
     role: str,
-    model: str = "gpt-4o-mini-2024-07-18",
+    model: str = "gpt-4o-mini",
 ) -> LLMResponse:
     prompt_template = Template(source=PROMPT)
     message = prompt_template.render(role=role)

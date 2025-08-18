@@ -28,7 +28,7 @@ def main() -> None:
     response = generate_plan(
         data_info=data_info,
         user_request=user_request,
-        model="gpt-4o-mini-2024-07-18",
+        model="gpt-4o-mini",
     )
     plan: Plan = response.content
 
@@ -40,7 +40,8 @@ def main() -> None:
                 data_file=data_file,
                 user_request=task.hypothesis,
                 # model="o3-mini-2025-01-31",
-                model="gpt-4o-2024-11-20",
+                # model="gpt-4o",
+                model="gpt-4o-mini",
                 process_id=f"sample-{idx}",
                 idx=idx,
             )

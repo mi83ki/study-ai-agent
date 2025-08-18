@@ -135,7 +135,7 @@ print("2.", template.render())
 解析対象のデータ情報を LLM に与えるために、[pandas](https://pandas.pydata.org/) を用いてデータ情報を記述します。
 
 ```bash
-uv run python scripts/03_describe_dataframe.py
+uv run python -m scripts.03_describe_dataframe
 ```
 
 ```python
@@ -158,7 +158,7 @@ uv run python scripts/03_describe_dataframe.py
 OpenAI API による LLM 呼び出しを行い、[`LLMResponse`](/chapter5/src/llms/models/llm_response.py) というデータ型を返す関数を実行して、プロフィールを生成します。
 
 ```bash
-uv run python scripts/04_generate_profile.py
+uv run python -m scripts.04_generate_profile
 ```
 
 一部抜粋ですが、事前に定義された ([`generate_response`](/chapter5/src/llms/apis/openai.py)) 関数を、以下のようにして呼び出しています。
@@ -201,7 +201,7 @@ class DataThread(BaseModel):
 タスク要求と解析対象データに対して、要求を満たすコードを生成します。なおここでは「データの概要について教えて」という要求を指定しています。
 
 ```bash
-uv run python scripts/05_generate_code.py
+uv run python -m scripts.05_generate_code
 ```
 
 - 出力形式: [`Program`](/chapter5/src/models/program.py)
@@ -228,7 +228,7 @@ return sandbox.run_code(
 次にコードを E2B Sandbox 上で実行します。なお以下では `print(df.shape)` というデータサイズを確認するコードで動作を確認します。
 
 ```bash
-uv run python scripts/06_execute_code.py
+uv run python -m scripts.06_execute_code
 ```
 
 上記で呼び出している [`execute_code`](/chapter5/src/modules/execute_code.py) 関数では、`Sandbox.run_code` メソッドを呼び出しています。
@@ -248,7 +248,7 @@ results = [
 LLM を用いて実行された結果に対するレビューを行います。以下では、先ほどの `print(df.shape)` の実行結果に対するレビューを LLM が生成します。
 
 ```bash
-uv run python scripts/07_generate_review.py
+uv run python -m scripts.07_generate_review
 ```
 
 - 出力形式: [`Review`](/chapter5/src/models/review.py)
@@ -261,7 +261,7 @@ uv run python scripts/07_generate_review.py
 ここまでの一連の処理を実行します。
 
 ```bash
-uv run python scripts/08_programmer.py
+uv run python -m scripts.08_programmer
 ```
 
 ## 5.5 データ分析レポートの作成
@@ -275,7 +275,7 @@ uv run python scripts/08_programmer.py
 LLM を用いて、ユーザーからの要求を構成的に分解します。
 
 ```bash
-uv run python scripts/09_generate_plan.py
+uv run python -m scripts.09_generate_plan
 ```
 
 - 出力形式: [`Plan`](/chapter5/src/models/plan.py)
@@ -288,7 +288,7 @@ uv run python scripts/09_generate_plan.py
 5.5.1 で生成された分析計画の各サブタスクをそれぞれ実行します。
 
 ```bash
-uv run python scripts/10_execute_plan.py
+uv run python -m scripts.10_execute_plan
 ```
 
 ### 5.5.3 実行結果を反映したレポート生成
@@ -297,7 +297,7 @@ uv run python scripts/10_execute_plan.py
 分析結果は `outputs/{process_id}/report.md` に保存されます。
 
 ```bash
-uv run python scripts/11_generate_report.py \
+uv run python -m scripts.11_generate_report \
     --data_file "data/sample.csv" \
     --user_request "scoreを最大化するための広告キャンペーンを検討したい" \
     --process_id "sample"
@@ -312,11 +312,11 @@ uv run python scripts/11_generate_report.py \
 ### 5.4 プログラム生成を行うシングルエージェントワークフロー
 
 ```bash
-uv run python src/graph/programmer.py
+uv run python -m src.graph.programmer
 ```
 
 ### 5.5 データ分析レポートの作成
 
 ```bash
-uv run python src/graph/data_analysis.py
+uv run python -m src.graph.data_analysis
 ```

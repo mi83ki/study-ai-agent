@@ -10,7 +10,7 @@ def generate_review(
     data_thread: DataThread,
     has_results: bool = False,
     remote_save_dir: str = "outputs/process_id/id",
-    model: str = "gpt-4o-mini-2024-07-18",
+    model: str = "gpt-4o-mini",
     template_file: str = "src/prompts/generate_review.jinja",
 ) -> LLMResponse:
     template = load_template(template_file)

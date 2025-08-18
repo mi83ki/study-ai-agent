@@ -7,7 +7,7 @@ from src.models import Plan
 def generate_plan(
     data_info: str,
     user_request: str,
-    model: str = "gpt-4o-mini-2024-07-18",
+    model: str = "gpt-4o-mini",
     template_file: str = "src/prompts/generate_plan.jinja",
 ) -> LLMResponse:
     template = load_template(template_file)

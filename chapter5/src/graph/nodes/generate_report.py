@@ -15,7 +15,7 @@ def generate_report_node(state: DataAnalysisState) -> dict:
         data_info=state["data_info"],
         user_request=state["user_request"],
         process_data_threads=state["sub_task_threads"],
-        model="gpt-4o-mini-2024-07-18",
+        model="gpt-4o-mini",
         output_dir="outputs/graph",
     )
     return Command(

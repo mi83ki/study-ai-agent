@@ -15,7 +15,7 @@ def generate_report(
     data_info: str,
     user_request: str,
     process_data_threads: list[DataThread] = [],
-    model: str = "gpt-4o-mini-2024-07-18",
+    model: str = "gpt-4o-mini",
     output_dir: str = "outputs/sample",
     template_file: str = "src/prompts/generate_report.jinja",
 ) -> LLMResponse:
@@ -57,7 +57,7 @@ def generate_report(
                 )
             else:
                 user_contents.append(
-                    {"type": "text", "text": f"実行結果: {res['content']}"},
+                    {"type": "input_text", "text": f"実行結果: {res['content']}"},
                 )
         messages.append({"role": "user", "content": user_contents})
 

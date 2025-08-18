@@ -17,7 +17,7 @@ def main() -> None:
     response = generate_plan(
         data_info=data_info,
         user_request=user_request,
-        model="gpt-4o-mini-2024-07-18",
+        model="gpt-4o-mini",
     )
     plan = response.content
     logger.info(plan.model_dump_json(indent=4))

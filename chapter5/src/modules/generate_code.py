@@ -9,7 +9,7 @@ def generate_code(
     user_request: str,
     remote_save_dir: str = "outputs/process_id/id",
     previous_thread: DataThread | None = None,
-    model: str = "gpt-4o-mini-2024-07-18",
+    model: str = "gpt-4o-mini",
     template_file: str = "src/prompts/generate_code.jinja",
 ) -> LLMResponse:
     template = load_template(template_file)

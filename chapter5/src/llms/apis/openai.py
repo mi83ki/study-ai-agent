@@ -15,11 +15,11 @@ COST = {
         "input": 1.10 / 1_000_000,
         "output": 4.40 / 1_000_000,
     },
-    "gpt-4o-2024-11-20": {
+    "gpt-4o": {
         "input": 2.50 / 1_000_000,
         "output": 1.25 / 1_000_000,
     },
-    "gpt-4o-mini-2024-07-18": {
+    "gpt-4o-mini": {
         "input": 0.150 / 1_000_000,
         "output": 0.600 / 1_000_000,
     },
@@ -28,7 +28,7 @@ COST = {
 
 def generate_response(
     messages: list,
-    model: str = "gpt-4o-2024-11-20",
+    model: str = "gpt-4o",
     response_format: BaseModel | None = None,
 ) -> LLMResponse:
     assert model in COST, f"Invalid model name: {model}"

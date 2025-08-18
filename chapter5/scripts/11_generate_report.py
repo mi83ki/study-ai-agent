@@ -21,7 +21,7 @@ def main() -> None:
         default="scoreを最大化するための広告キャンペーンを検討したい",
     )
     parser.add_argument("--process_id", type=str, default="sample")
-    parser.add_argument("--model", type=str, default="gpt-4o-mini-2024-07-18")
+    parser.add_argument("--model", type=str, default="gpt-4o-mini")
     args = parser.parse_args()
 
     output_dir = Path("outputs") / args.process_id
