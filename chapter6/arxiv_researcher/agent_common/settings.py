@@ -19,13 +19,17 @@ class Settings(BaseSettings):
 
     # 使用するLLMの種類(AZURE_OPENAI or OLLAMA)
     LLM_TYPE: str = "AZURE_OPENAI"
+    LLM_MODEL: str = "gpt-4.1-quality"
+    FAST_LLM_TYPE: str = "AZURE_OPENAI"
+    FAST_LLM_MODEL: str = "gpt-4.1-mini-quality"
+    REPORTER_LLM_TYPE: str = "AZURE_OPENAI"
+    REPORTER_LLM_MODEL: str = "gpt-4.1-quality"
 
     # If using Azure OpenAI
     AZURE_OPENAI_KEY: str = ""
     AZURE_OPENAI_ENDPOINT: str = ""
     AZURE_OPENAI_VERSION: str = ""
     AZURE_OPENAI_DEPLOYMENT_NAME_RAG: str = ""
-    AZURE_OPENAI_DEPLOYMENT_NAME_FAST: str = ""
 
     # If using Ollama
     OLLAMA_BASE_URL: str = "http://localhost:11434"

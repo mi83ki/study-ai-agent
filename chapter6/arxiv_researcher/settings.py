@@ -88,13 +88,17 @@ class Settings(BaseSettings):
 
     # 使用するLLMの種類(AZURE_OPENAI or OLLAMA)
     LLM_TYPE: str = "AZURE_OPENAI"
+    LLM_MODEL: str = "gpt-4.1-quality"
+    FAST_LLM_TYPE: str = "AZURE_OPENAI"
+    FAST_LLM_MODEL: str = "gpt-4.1-mini-quality"
+    REPORTER_LLM_TYPE: str = "AZURE_OPENAI"
+    REPORTER_LLM_MODEL: str = "gpt-4.1-quality"
 
     # If using Azure OpenAI
     AZURE_OPENAI_KEY: str = ""
     AZURE_OPENAI_ENDPOINT: str = ""
     AZURE_OPENAI_VERSION: str = ""
     AZURE_OPENAI_DEPLOYMENT_NAME_RAG: str = ""
-    AZURE_OPENAI_DEPLOYMENT_NAME_FAST: str = ""
 
     # If using Ollama
     OLLAMA_BASE_URL: str = "http://localhost:11434"
@@ -132,8 +136,9 @@ class Settings(BaseSettings):
     @property
     def llm(self) -> BaseLanguageModel:
         """複雑なタスク用のLLMインスタンスを返す"""
-        llm, handler =LangchainLLMFactory.create_llm(
+        llm, _ =LangchainLLMFactory.create_llm(
             llm_type=LLMType[self.LLM_TYPE],
+            model_name=self.LLM_MODEL,
             temperature=self.model.temperature,
             enable_default_tracing=False
         )
@@ -142,12 +147,24 @@ class Settings(BaseSettings):
     @property
     def fast_llm(self) -> BaseLanguageModel:
         """高速・軽量なタスク用のLLMインスタンスを返す"""
-        return self.llm
+        llm, _ =LangchainLLMFactory.create_llm(
+            llm_type=LLMType[self.FAST_LLM_TYPE],
+            model_name=self.FAST_LLM_MODEL,
+            temperature=self.model.temperature,
+            enable_default_tracing=False
+        )
+        return llm
 
     @property
     def reporter_llm(self) -> BaseLanguageModel:
         """レポート生成用のLLMインスタンスを返す"""
-        return self.llm
+        llm, _ =LangchainLLMFactory.create_llm(
+            llm_type=LLMType[self.REPORTER_LLM_TYPE],
+            model_name=self.REPORTER_LLM_MODEL,
+            temperature=self.model.temperature,
+            enable_default_tracing=False
+        )
+        return llm
 
     @property
     def cohere_client(self) -> cohere.Client:
