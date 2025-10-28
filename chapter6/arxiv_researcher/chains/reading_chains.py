@@ -15,7 +15,7 @@ from arxiv_researcher.service.markdown_storage import MarkdownStorage
 
 def load_prompt(name: str) -> str:
     prompt_path = Path(__file__).parent / "prompts" / f"{name}.prompt"
-    return prompt_path.read_text().strip()
+    return prompt_path.read_text(encoding="utf-8").strip()
 
 
 class Sufficiency(BaseModel):
