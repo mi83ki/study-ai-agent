@@ -1,10 +1,14 @@
 import os
 
 import cohere
-from langchain_anthropic import ChatAnthropic
-from langchain_openai import ChatOpenAI
+from langchain_core.language_models import BaseLanguageModel
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from arxiv_researcher.agent_common.langchain_llm_factory import (
+    LangchainLLMFactory,
+    LLMType,
+)
 
 
 class ArxivResearcherSettings(BaseModel):
@@ -69,8 +73,8 @@ class Settings(BaseSettings):
     )
 
     # 必須のAPIキー
-    OPENAI_API_KEY: str
-    ANTHROPIC_API_KEY: str
+    OPENAI_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str = ""
     COHERE_API_KEY: str
     JINA_API_KEY: str
 
@@ -81,6 +85,30 @@ class Settings(BaseSettings):
     )
     LANGSMITH_API_KEY: str = ""  # LangSmithのAPIキー
     LANGSMITH_PROJECT: str = "arxiv-researcher"  # プロジェクト名
+
+    # 使用するLLMの種類(AZURE_OPENAI or OLLAMA)
+    LLM_TYPE: str = "AZURE_OPENAI"
+
+    # If using Azure OpenAI
+    AZURE_OPENAI_KEY: str = ""
+    AZURE_OPENAI_ENDPOINT: str = ""
+    AZURE_OPENAI_VERSION: str = ""
+    AZURE_OPENAI_DEPLOYMENT_NAME_RAG: str = ""
+    AZURE_OPENAI_DEPLOYMENT_NAME_FAST: str = ""
+
+    # If using Ollama
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_DEPLOYMENT_NAME: str = "gemma3:1b"
+
+    # If using Ollama Embedding
+    OLLAMA_EMBEDDING_MODEL_NAME: str = "bge-m3"
+
+    # Langfuse
+    # Langfuseのトレースを無効にするときはFalseに変更する
+    LANGFUSE_TRACING_ENABLED: bool = False
+    LANGFUSE_SECRET_KEY: str = ""
+    LANGFUSE_PUBLIC_KEY: str = ""
+    LANGFUSE_HOST: str = "http://localhost:3000"
 
     # デバッグモード設定
     debug: bool = True
@@ -102,29 +130,24 @@ class Settings(BaseSettings):
         super().__init__(**values)
 
     @property
-    def llm(self) -> ChatOpenAI:
+    def llm(self) -> BaseLanguageModel:
         """複雑なタスク用のLLMインスタンスを返す"""
-        return ChatOpenAI(
-            model=self.model.openai_smart_model,
+        llm, handler =LangchainLLMFactory.create_llm(
+            llm_type=LLMType[self.LLM_TYPE],
             temperature=self.model.temperature,
+            enable_default_tracing=False
         )
+        return llm
 
     @property
-    def fast_llm(self) -> ChatOpenAI:
+    def fast_llm(self) -> BaseLanguageModel:
         """高速・軽量なタスク用のLLMインスタンスを返す"""
-        return ChatOpenAI(
-            model=self.model.openai_fast_model,
-            temperature=self.model.temperature,
-        )
+        return self.llm
 
     @property
-    def reporter_llm(self) -> ChatAnthropic:
+    def reporter_llm(self) -> BaseLanguageModel:
         """レポート生成用のLLMインスタンスを返す"""
-        return ChatAnthropic(
-            model=self.model.anthropic_model,
-            temperature=self.model.temperature,
-            max_tokens=8_192,
-        )
+        return self.llm
 
     @property
     def cohere_client(self) -> cohere.Client:
