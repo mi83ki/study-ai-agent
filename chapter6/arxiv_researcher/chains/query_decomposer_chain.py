@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Literal
 
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
@@ -21,7 +21,7 @@ class DecomposedTasks(BaseModel):
 
 
 class QueryDecomposer:
-    def __init__(self, llm: ChatOpenAI):
+    def __init__(self, llm: BaseLanguageModel):
         self.llm = llm
         self.current_date = datetime.now().strftime("%Y-%m-%d")
         self.min_decomposed_tasks = settings.query_decomposer.min_decomposed_tasks

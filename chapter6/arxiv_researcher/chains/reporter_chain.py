@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.types import Command
@@ -10,7 +10,7 @@ from arxiv_researcher.models.reading import ReadingResult
 
 
 class Reporter:
-    def __init__(self, llm: ChatAnthropic) -> None:
+    def __init__(self, llm: BaseLanguageModel) -> None:
         self.llm = llm
         self.current_date = datetime.now().strftime("%Y-%m-%d")
 

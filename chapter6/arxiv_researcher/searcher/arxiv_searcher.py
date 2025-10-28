@@ -4,14 +4,15 @@ from typing import Optional
 
 import cohere
 import feedparser  # type: ignore
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from pydantic import BaseModel, Field
+
 from arxiv_researcher.logger import logger
 from arxiv_researcher.models import ArxivPaper
 from arxiv_researcher.searcher.searcher import Searcher
 from arxiv_researcher.settings import settings
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
-from pydantic import BaseModel, Field
 
 FIELD_SELECTOR_PROMPT = """\
 Determine the arXiv categories that need to be searched based on the user's query.
@@ -142,7 +143,7 @@ class ArxivSearcher(Searcher):
 
     def __init__(
         self,
-        llm: ChatOpenAI,
+        llm: BaseLanguageModel,
         cohere_client: cohere.Client = settings.cohere_client,
         max_search_results: int = settings.arxiv_search_agent.max_search_results,
         max_papers: int = settings.arxiv_search_agent.max_papers,

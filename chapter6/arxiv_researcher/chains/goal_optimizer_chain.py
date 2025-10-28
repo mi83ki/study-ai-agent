@@ -1,17 +1,17 @@
 from datetime import datetime
 from typing import Literal
 
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 
 from arxiv_researcher.chains.utils import load_prompt
 
 
 class GoalOptimizer:
-    def __init__(self, llm: ChatOpenAI):
+    def __init__(self, llm: BaseLanguageModel):
         self.llm = llm
         self.current_date = datetime.now().strftime("%Y-%m-%d")
 

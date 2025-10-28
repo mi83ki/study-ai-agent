@@ -1,7 +1,7 @@
 import operator
 from typing import Annotated, TypedDict
 
-from langchain_openai import ChatOpenAI
+from langchain_core.language_models import BaseLanguageModel
 from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
@@ -37,7 +37,7 @@ class PaperSearchAgentState(
 
 
 class PaperSearchAgent:
-    def __init__(self, llm: ChatOpenAI, searcher: ArxivSearcher):
+    def __init__(self, llm: BaseLanguageModel, searcher: ArxivSearcher):
         self.recursion_limit = settings.langgraph.max_recursion_limit
         self.max_workers = settings.arxiv_search_agent.max_workers
         self.llm = llm

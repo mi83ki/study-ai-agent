@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Literal
 
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import ConfigurableField, RunnableLambda
-from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
@@ -26,7 +26,7 @@ class Sufficiency(BaseModel):
 class SetSection:
     PROMPT = load_prompt("set_section")
 
-    def __init__(self, llm: ChatOpenAI, max_sections: int):
+    def __init__(self, llm: BaseLanguageModel, max_sections: int):
         self.llm = llm.configurable_fields(
             max_tokens=ConfigurableField(id="max_tokens")
         )
@@ -83,7 +83,7 @@ class SetSection:
 class CheckSufficiency:
     PROMPT = load_prompt("check_sufficiency")
 
-    def __init__(self, llm: ChatOpenAI, check_count: int):
+    def __init__(self, llm: BaseLanguageModel, check_count: int):
         self.llm = llm
         self.check_count = check_count
         self.storage = MarkdownStorage()
@@ -137,7 +137,7 @@ class CheckSufficiency:
 class Summarizer:
     PROMPT = load_prompt("summarize")
 
-    def __init__(self, llm: ChatOpenAI):
+    def __init__(self, llm: BaseLanguageModel):
         self.llm = llm
         self.storage = MarkdownStorage()
         self.parser = MarkdownParser()

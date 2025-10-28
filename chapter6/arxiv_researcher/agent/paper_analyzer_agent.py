@@ -1,7 +1,7 @@
 from typing import TypedDict
 
-from langchain_openai import ChatOpenAI
-from langgraph.graph import END, StateGraph
+from langchain_core.language_models import BaseLanguageModel
+from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
 
@@ -47,7 +47,7 @@ class PaperAnalyzerAgent:
 
     def __init__(
         self,
-        llm: ChatOpenAI,
+        llm: BaseLanguageModel,
     ):
         self.set_section = SetSection(llm, max_sections=self.MAX_SECTIONS)
         self.check_sufficiency = CheckSufficiency(llm, check_count=self.CHECK_COUNT)
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     )
 
     agent = PaperAnalyzerAgent(
-        llm=ChatOpenAI(model="gpt-4o-mini", temperature=0.0),
+        llm=settings.fast_llm,
     )
     for state in agent.graph.stream(
         PaperAnalyzerAgentState(

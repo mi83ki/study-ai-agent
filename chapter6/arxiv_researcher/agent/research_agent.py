@@ -1,10 +1,10 @@
 from typing import Annotated, Literal, TypedDict
 
-from langchain_anthropic import ChatAnthropic
-from langchain_openai import ChatOpenAI
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.messages import AnyMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph
-from langgraph.graph.message import AnyMessage, add_messages
+from langgraph.graph.message import add_messages
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command, interrupt
 
@@ -46,9 +46,9 @@ class ResearchAgentState(
 class ResearchAgent:
     def __init__(
         self,
-        llm: ChatOpenAI = settings.llm,
-        fast_llm: ChatOpenAI = settings.fast_llm,
-        reporter_llm: ChatAnthropic = settings.reporter_llm,
+        llm: BaseLanguageModel = settings.llm,
+        fast_llm: BaseLanguageModel = settings.fast_llm,
+        reporter_llm: BaseLanguageModel = settings.reporter_llm,
     ) -> None:
         self.recursion_limit = settings.langgraph.max_recursion_limit
         self.max_evaluation_retry_count = (
