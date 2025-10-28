@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import ClassVar
 
 from dotenv import load_dotenv
 from langchain_core.language_models import BaseLanguageModel
@@ -21,12 +22,15 @@ class LLMType(Enum):
 
 class LangchainLLMFactory:
     # 環境変数を.envから読み込む
-    __settings: Settings = Settings()
+    __settings: ClassVar[Settings] = Settings()
+    # LLMインスタンスのキャッシュ
+    __instances: ClassVar[dict[str, tuple[BaseLanguageModel, CallbackHandler | None]]] = {}
 
     @classmethod
     def create_llm(
         cls,
         llm_type: LLMType,
+        model_name: str | None = None,
         temperature: float = 0.0,
         enable_default_tracing: bool = True,
     ) -> tuple[BaseLanguageModel, CallbackHandler | None]:
@@ -34,6 +38,7 @@ class LangchainLLMFactory:
 
         Args:
             llm_type (LLMType): LLMの種類を指定するEnumクラス
+            model_name (str | None, optional): モデル名. Defaults to None.
             temperature (float, optional): temperature. Defaults to 0.0.
             enable_default_tracing (bool, optional): Langfuseのトレーシングをllmインスタンスに適用するするかどうか. Defaults to True.
 
@@ -48,39 +53,50 @@ class LangchainLLMFactory:
             {
                 "action": "create_llm",
                 "llm_type": llm_type,
+                "model_name": model_name,
                 "temperature": temperature,
             }
         )
 
+        model_key = (
+            f"{llm_type.value}_{model_name}"
+            if model_name
+            else llm_type.value
+        )
         # Langfuse
         langfuse_handler: CallbackHandler | None = cls.create_langfuse_handler()
-        match llm_type:
-            case LLMType.AZURE_OPENAI:
-                # AzureOpenAIの場合
-                llm = AzureChatOpenAI(
-                    api_key=SecretStr(cls.__settings.AZURE_OPENAI_KEY),
-                    azure_endpoint=cls.__settings.AZURE_OPENAI_ENDPOINT,
-                    api_version=cls.__settings.AZURE_OPENAI_VERSION,
-                    azure_deployment=cls.__settings.AZURE_OPENAI_DEPLOYMENT_NAME_RAG,
-                    temperature=temperature,
-                    callbacks=[langfuse_handler]
-                    if langfuse_handler and enable_default_tracing
-                    else None,
-                )
-                return llm, langfuse_handler
-            case LLMType.OLLAMA:
-                # Ollamaの場合
-                llm = OllamaLLM(
-                    model=cls.__settings.OLLAMA_DEPLOYMENT_NAME,
-                    base_url=cls.__settings.OLLAMA_BASE_URL,
-                    temperature=temperature,
-                    callbacks=[langfuse_handler]
-                    if langfuse_handler and enable_default_tracing
-                    else None,
-                )
-                return llm, langfuse_handler
-            case _:
-                raise ValueError(f"Unsupported LLM type: {llm_type}")
+        if model_key not in cls.__instances:
+            match llm_type:
+                case LLMType.AZURE_OPENAI:
+                    # AzureOpenAIの場合
+                    model = model_name or cls.__settings.AZURE_OPENAI_DEPLOYMENT_NAME_RAG
+                    llm = AzureChatOpenAI(
+                        api_key=SecretStr(cls.__settings.AZURE_OPENAI_KEY),
+                        azure_endpoint=cls.__settings.AZURE_OPENAI_ENDPOINT,
+                        api_version=cls.__settings.AZURE_OPENAI_VERSION,
+                        azure_deployment=model,
+                        temperature=temperature,
+                        callbacks=[langfuse_handler]
+                        if langfuse_handler and enable_default_tracing
+                        else None,
+                    )
+                    cls.__instances[model_key] = (llm, langfuse_handler)
+                case LLMType.OLLAMA:
+                    # Ollamaの場合
+                    model = model_name or cls.__settings.OLLAMA_DEPLOYMENT_NAME
+                    llm = OllamaLLM(
+                        model=model,
+                        base_url=cls.__settings.OLLAMA_BASE_URL,
+                        temperature=temperature,
+                        callbacks=[langfuse_handler]
+                        if langfuse_handler and enable_default_tracing
+                        else None,
+                    )
+                    cls.__instances[model_key] = (llm, langfuse_handler)
+                case _:
+                    raise ValueError(f"Unsupported LLM type: {llm_type}")
+            logger.info({"action": "create_llm", "model_key": model_key})
+        return cls.__instances[model_key]
 
     @classmethod
     def create_langfuse_handler(cls) -> CallbackHandler | None:
